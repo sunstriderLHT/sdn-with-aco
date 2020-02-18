@@ -127,7 +127,7 @@ def predict_next_L(path_list):
     
     L_next = average + standardDeviation
 
-    return L_next
+    return L_next, load_path
 
 # delay[i][j] can be set based on topologyMatrix
 delay = [[]]
@@ -139,12 +139,23 @@ def cost(i, j):
     return cost
 
 def select_best_path(path_list):
+    best_path = []
     cost_list = []
+    L, load_path = predict_next_L(path_list)
+    
     for path in path_list:
         cost_path = 0
         for i in range(len(path) - 1):
             cost_path += cost(path[i], path[i+1])
-        cost_list.append([path_list.index(path), cost_path])
+        cost_list.append(cost_path)
+        
+    minimum = min(cost_list)
+    if load_path[cost_list.index(minimum)] <= L:
+        best_path.append(path_list[cost_list.index(minimum)])
+    
+    return best_path
+        
+    
     
     
             
