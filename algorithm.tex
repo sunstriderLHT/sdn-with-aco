@@ -1,0 +1,86 @@
+\documentclass{article}
+\usepackage{xcolor}
+\usepackage[linesnumbered,ruled,vlined]{algorithm2e}
+\usepackage{amsmath}
+
+
+\begin{document}
+\begin{algorithm}[H]
+	\SetKwInOut{Input}{input}
+	\SetKwInOut{Output}{output}
+	\Input{$q_{0}, \alpha, \beta, \rho, \theta, \delta, L_{0}^\ast, allowedSet_{0}, \tau_{0}$}
+	\Output{$pathList, L^\ast$}
+	\For{$Iteration_{m}$}
+	{		
+		\For{$Ant_{k}$}
+		{
+			$node_{i} \gets $current node\;
+			\While{$node_{i} \neq Destination$}
+			{
+				\If{$0 < q < q_{0}$}
+				{
+					$node_{j} \gets MAX(P_{ij})$\;
+					\tcc{$P_{ij}$ gets from $Equation(0)$}
+				}
+				\ElseIf{$q_{0} <= q < 1$}
+				{
+					$node_{j} \gets $the closest node on the Shortest Path\;
+				}
+				$path_{m, k}.append(node_{i})$\;
+				$LocalUpdatePheromone(path_{ij})$\;
+				\tcc{move to $node_{j}$ from $node_{i}$}
+				
+			}
+			\Return{$path_{m, k}$}\;
+			$pathList_{m}.append(path_{m, k})$\;
+				
+		}
+		\Return{$pathList_{m}$ and $L_{m}^\ast$}\;
+		$BestPath_{m} \gets SelectBestPath(pathList_{m})$\;
+		$ClearLocalUpdatePheromone$\;
+		$GlobalUpdatePheromone(BestPath_{m})$\;
+		$GlobalUpdatePheromone(pathList_{m}-BestPath_{m})$\;
+		\tcc{all nodes sent to the next Iteration have diffferent pheromone}
+	}
+\caption{Algorithm}
+\end{algorithm}
+
+\section{Equations}
+$Equation(0)$ is like below:
+\[
+	P_{ij} = \begin{cases}
+		\frac{\tau_{ij}^{\alpha}\eta_{ij}^{\beta}}{\sum_{k \in allowedSet_{m}}{\tau_{ik}^{\alpha}\eta_{ik}^{\beta}}}, & j \in \text{$allowedSet$};\\0, & \text{otherwise}
+		\end{cases}
+\]
+Note:
+\begin{itemize}
+\item $\tau_{ij}$ is the pheromone deposited at the link between $node_{i}$ and $node_{j}$, $\alpha$ is its weight
+\item $\eta_{ij}$ is the available bandwidth at the $node_{j}$, $\beta$ is its weight
+\item all nodes in $allowedSet_{0}$ have predefined pheromone
+\item each $L^\ast$ can be the indication of the distribution of network traffic
+\item $L_{0}$ is predefiend as the average maximum bandwidth of all links at the begining
+\item $allowedSet_{m}$ includes all nodes in the topology, but each node has different pheromone updated according to the iteration result.
+\end{itemize}
+\begin{align}
+&	\tau_{ij} = (1-\rho) \cdot \tau_{ij} + \Delta\tau_{ij} \quad GlobalUpdatePheromone\\
+&	\tau_{ij} = (1-\theta) \cdot \tau_{ij} + \Delta\tau_{ij} \quad LocalUpdatePheromone\\
+&	\eta_{ij} = L_{m-1}^\ast - T(\Delta\tau_{ij}) \\
+&	L_{m-1}^\ast = Average(load(path)) + StandardDeviation(load(path)),\quad path \subset pathList_{m-1} \\
+&	Average(load(path)) = \frac{\sum_{path \subset pathList_{m-1}}{load(path)}}{N} \\
+&	load(path) = max\{load(path_{ij})\},\quad path_{ij} \subset path \\
+& load(path_{ij}) = T(\Delta\tau_{ij})
+\end{align}
+
+For $SelectBestPath(pathList_{m})$, we have:
+\begin{align}
+&	BestPath = min\{cost(path)\},\quad path \subset pathList_{m},\quad load(path) \leq L_{m}^\ast \\
+&	cost(path) = \sum_{path_{ij} \subset path}{cost(path_{ij})} \\
+& cost(path_{ij}) = \delta \cdot delay_{ij} + (1-\delta) \cdot pl_{ij}
+\end{align}
+\section{How to divide the whole process into modules}
+\begin{itemize}
+\item Module ONE. decision making on nodes should return the next $node_{j}$ for each ant.
+\item Module TWO. For local search, UpdatePheromone should accept $node_{j} as one of parameters and return the lastest state of $path_{m, k}. For global pheromone, UpdatePheromone should accept  $BestPath_{m}$ and $pathList_{m}-BestPath_{m}$ as the major parameters and return the dictionary or other data strutures whicah can indicate the global pheromone distribution as the input of the next iteration.
+\item Module THREE. Based on the result of Module ONE, append $node_{j}$ into the updated $path_{m, k}$. Besides, pathUpdate should accept the correct parameters (like $node_{j}$ and the dictionary in Module TWO}
+\end{itemize}
+\end{document}
