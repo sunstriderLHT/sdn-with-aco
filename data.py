@@ -1,11 +1,13 @@
+import xlrd
 
 '''
 all parameters we need to predefine before the iteration starts
 '''
 ant_num = None
+ant_bw = 1
+
 alpha = None
 beta = None
-ant_bw = None
 original_pheromone = None
 # evaporate parameter for local update
 rau = None
@@ -14,6 +16,7 @@ Delta = None
 
 delta_tau = None
 
+# the maximum bandwidth of all links
 L_0 = None
 
 '''
@@ -26,10 +29,21 @@ final_best_path_list = []
 '''
 data structure
 '''
-topoMatrix =[[]]
-delay = [[]]
-packet_loss = [[]]
+def get_matrix(path):
+    matrix = []
+    x_workbook = xlrd.open_workbook(path)
+    sheet = x_workbook.sheets()[0]
+    rows = sheet.nrows
+    for row in range(rows):
+        matrix.append(sheet.row_values(row))
 
-local_node_state = {node:[pheromone, load]}
-global_node_state = {node:[pheromone, max_load]}
+    return matrix
+
+topoMatrix = get_matrix('topoMatrix.xlsx')
+delay = get_matrix('delay.xlsx')
+
+max_load = [20, 20, 25, 25, 25, 20, 25, 25, 20, 25]
+local_node_state = {i:[original_pheromone, 0] for i in range(10)}
+global_node_state = {i:[original_pheromone, max_load[i]] for i in range(10)}
+
 

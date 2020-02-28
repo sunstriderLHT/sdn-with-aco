@@ -3,7 +3,6 @@ import numpy
 import data
 from data import rau, Delta, delta_tau, ant_bw, original_pheromone
 
-
 def check_reachability(current_node, destination_node):
     
     available_nodes = []
@@ -20,7 +19,7 @@ def check_reachability(current_node, destination_node):
             # make sure candidate nodes are connected with other nodes except current_node
             if sum(temp) > 1:
                 available_nodes.append(node)
-                
+
     return available_nodes
 
 def calculate_probability(available_nodes, alpha, beta, L):
