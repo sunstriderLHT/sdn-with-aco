@@ -1,7 +1,7 @@
 import numpy
 
 import data
-from data import rau, Delta, delta_tau, ant_bw, original_pheromone
+from data import rau, Delta, delta_tau, ant_bw, original_pheromone, max_load
 
 def check_reachability(previous_node, current_node, destination_node):
     
@@ -28,10 +28,14 @@ def calculate_probability(available_nodes, alpha, beta, L):
     total_weight = 0
     
     for node in available_nodes:
-        weight = data.local_node_state[node][0] ** alpha * (L - data.local_node_state[node][1] * ant_bw) ** beta
+        if data.local_node_state[node][1] <= max_load[node]:
+            weight = data.local_node_state[node][0] ** alpha * (L - data.local_node_state[node][1] * ant_bw) ** beta
+        else:
+            weight = 0
         total_weight += weight
         influence_weight.append(weight)
-    
+
+    # print(total_weight, ':', influence_weight)
     probability_list = [weight / total_weight for weight in influence_weight]
     
     return probability_list
