@@ -18,6 +18,7 @@ class Ant:
         self.end_node = end_node
         self.path = []
         self.current_node = start_node
+        self.previous_node = None
         
     def choose_next_node(self, available_nodes):
         '''
@@ -44,7 +45,7 @@ class Ant:
         self.path.append(self.current_node)
         
     def move(self, next_node):
-        self.current_node = next_node
+        self.previous_node, self.current_node = self.current_node, next_node
         
     
         

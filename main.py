@@ -2,7 +2,7 @@ from path import find_path, calculate_load_cost, select_best_path
 from functionalities import predict_next_L, reset_local_node_state, global_update_state
 
 from data import L_list, final_path_list, final_best_path_list
-from data import local_node_state, ant_num
+from data import local_node_state, ant_num, global_node_state
 
 count = 0
 path_list = []
@@ -10,7 +10,8 @@ path_list = []
 # each ant completes the search process, count++
 # until all ants complete this job
 while count != ant_num:
-    path = find_path(1, 8)
+    path = find_path(0, 6)
+    print('***', path)
     path_list.append(path)
     count += 1
 
@@ -22,6 +23,7 @@ final_path_list.append(path_list)
 # append the threshold to the result list
 # L_list[i] indicates the threshold of the i-th iteration
 path_load_list, path_cost_list = calculate_load_cost(path_list)
+print(path_cost_list)
 L = predict_next_L(path_load_list)
 L_list.append(L)
 
@@ -30,12 +32,13 @@ L_list.append(L)
 # final_best_path[i] indicates the best path of the i-th iteration
 best_path = [path_list[i] for i in select_best_path(path_load_list, path_cost_list, L_list[-1])]
 final_best_path_list.append(best_path)
-
+# print(best_path)
 # reset local state as the original level after completing one iteration
 # then update global_node_state
+# print(local_node_state)
 reset_local_node_state(local_node_state)
 global_update_state(final_path_list[-1], final_best_path_list[-1])
-
+# print(global_node_state)
 
 
 

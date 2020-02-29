@@ -3,7 +3,7 @@ import numpy
 import data
 from data import rau, Delta, delta_tau, ant_bw, original_pheromone
 
-def check_reachability(current_node, destination_node):
+def check_reachability(previous_node, current_node, destination_node):
     
     available_nodes = []
 
@@ -14,7 +14,7 @@ def check_reachability(current_node, destination_node):
     for node in nodes:
         if node == destination_node:
             available_nodes.append(node)
-        else:
+        elif node != previous_node:
             temp = data.topoMatrix[node]
             # make sure candidate nodes are connected with other nodes except current_node
             if sum(temp) > 1:
@@ -42,11 +42,11 @@ def local_update_state(node):
 
 def reset_local_node_state(local_node_state):
 
-    for node in local_node_state.keys():
+    for node in local_node_state.values():
         # all nodes are set with the original pheromone
         node[0] = original_pheromone
         # load of all nodes are back to the maximum level
-        node[1] = data.global_node_state[node][1]
+        node[1] = 0
 
 def global_update_state(path_list, best_path):
 

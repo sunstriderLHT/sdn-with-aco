@@ -3,21 +3,22 @@ import xlrd
 '''
 all parameters we need to predefine before the iteration starts
 '''
-ant_num = None
+ant_num = 20
 ant_bw = 1
 
-alpha = None
-beta = None
-original_pheromone = None
+alpha = 2
+beta = 1
+original_pheromone = 1
 # evaporate parameter for local update
-rau = None
+rau = 0.3
 # evaporate parameter for global update
-Delta = None
+Delta = 0.2
 
-delta_tau = None
+# small as much as possible
+delta_tau = 0.3
 
 # the maximum bandwidth of all links
-L_0 = None
+L_0 = 25
 
 '''
 store the iteration result
