@@ -58,7 +58,7 @@ def select_best_path(path_load_list, path_cost_list, L):
     path_load_cost = zip(path_load_list, path_cost_list)
 
     best_path_index = [path_cost_list.index(cost) for load, cost in path_load_cost \
-                       if load <= L and cost == minimum]
+                       if load <= L[-1] and cost == minimum]
 
     return best_path_index
     
