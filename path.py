@@ -1,20 +1,25 @@
-
+import numpy
 from ant import Ant
 from functionalities import check_reachability
-from data import local_node_state, ant_bw, delay
+from data import local_node_state, ant_bw, delay, max_load
 
 class Path:
     def __init__(self, path):
         self.path = path
 
+    # def load(self):
+    #
+    #     load_list = []
+    #     for node in self.path:
+    #         load = local_node_state[node][1] * ant_bw
+    #         load_list.append(load)
+    #     load = max(load_list)
+    #     return load
 
-    def load(self):
-        load_list = []
-        for node in self.path:
-            load = local_node_state[node][1] * ant_bw
-            load_list.append(load)
-        load = max(load_list)
-        return load
+    def global_load(self, max_load):
+        load_list = [max_load[node] for node in self.path]
+        global_load = min(load_list)
+        return global_load
 
     def cost(self):
         total_cost = 0 
@@ -48,20 +53,23 @@ def calculate_load_cost(path_list):
     path_cost_list = []
     for i in range(len(path_list)):
         path = Path(path_list[i])
-        path_load_list.append(path.load())
+        path_load_list.append(path.global_load(max_load))
         path_cost_list.append(path.cost())
 
     return [path_load_list, path_cost_list]
 
-def select_best_path(path_load_list, path_cost_list, L):
-    minimum = min(path_cost_list)
-    path_load_cost = zip(path_load_list, path_cost_list)
+def select_best_path(path_cost_list):
 
-    best_path_index = [path_cost_list.index(cost) for load, cost in path_load_cost \
-                       if load <= L[-1] and cost == minimum]
+    def sortSecond(val):
+        return val[1]
+
+    average_cost = numpy.mean(path_cost_list)
+    temp = [i for i in enumerate(path_cost_list)]
+    temp.sort(key=sortSecond)
+
+    best_path_index = [cost[0] for cost in temp if cost[1] <= average_cost]
 
     return best_path_index
-    
-            
+
             
         

@@ -1,4 +1,4 @@
-import math
+import numpy
 
 import data
 from data import rau, Delta, delta_tau, ant_bw, original_pheromone, max_load
@@ -22,20 +22,25 @@ def check_reachability(previous_node, current_node, destination_node):
 
     return available_nodes
 
-def calculate_probability(available_nodes, alpha, beta, L):
+def calculate_probability(available_nodes, alpha, beta):
     influence_weight = []
     total_weight = 0
     
     for node in available_nodes:
-        if data.local_node_state[node][1] <= max_load[node]:
-            weight = data.local_node_state[node][0] ** alpha * (L[-1] - data.local_node_state[node][1] * ant_bw) ** beta
+        if data.local_node_state[node][1] < max_load[node]:
+            weight = data.local_node_state[node][0] ** alpha * (max_load[node] - data.local_node_state[node][1] * ant_bw) ** beta
         else:
+            # when available load is exhausted
+            # no ant chooses the node
             weight = 0
         total_weight += weight
         influence_weight.append(weight)
 
     # print(total_weight, ':', influence_weight)
-    probability_list = [weight / total_weight for weight in influence_weight]
+    try:
+        probability_list = [weight / total_weight for weight in influence_weight]
+    except ZeroDivisionError:
+        raise('the network has been the maximum level! More traffic must be in queuing!')
     
     return probability_list
 
@@ -63,12 +68,14 @@ def global_update_state(path_list, best_path):
                 global_node_state[node][0] *= (1-Delta) + 2 * delta_tau
     return global_node_state
 
-def predict_next_L(path_load_list):
-
-    average = sum(path_load_list) / len(path_load_list)
-    temp = [(load - average) **2 for load in path_load_list]
-    standard_deviation = math.sqrt(sum(temp) / len(path_load_list))
-
-    L_next = average + standard_deviation
-    
-    return L_next
+# def predict_next_L(path_load_list):
+#
+#     average = numpy.mean(path_load_list)
+#     standard_deviation = numpy.std(path_load_list)
+#
+#     L_next = average - standard_deviation
+#
+#     if L_next > max(max_load):
+#         return max(max_load)
+#     else:
+#         return L_next

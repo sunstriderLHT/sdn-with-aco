@@ -1,6 +1,6 @@
 import random
 from functionalities import calculate_probability, local_update_state
-from data import alpha, beta, L_list
+from data import alpha, beta
 
 class Ant:
     '''
@@ -29,7 +29,7 @@ class Ant:
         if self.end_node in available_nodes:
             next_node = self.end_node
         else:
-            probability_list = calculate_probability(available_nodes, alpha, beta, L_list[-1])
+            probability_list = calculate_probability(available_nodes, alpha, beta)
             max_probability = max(probability_list)
             max_node_index = [i for i, p in enumerate(probability_list) if p == max_probability]
             anchor = random.randint(0, len(max_node_index)- 1)
@@ -46,6 +46,7 @@ class Ant:
         
     def move(self, next_node):
         self.previous_node, self.current_node = self.current_node, next_node
-        
+
+
     
         

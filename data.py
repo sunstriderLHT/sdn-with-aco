@@ -1,5 +1,4 @@
 import xlrd
-import xlsxwriter
 from openpyxl import load_workbook
 '''
 all parameters we need to predefine before the iteration starts
@@ -90,7 +89,7 @@ def store_global_node_state(file_path, global_node_state, iteration):
         new_sheet.append(node)
     workbook.save(file_path)
 
-L_list = get_iteration_result('l.xlsx')
+# L_list = get_iteration_result('l.xlsx')
 
 topoMatrix = get_matrix('topoMatrix.xlsx')
 delay = get_matrix('delay.xlsx')
